@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" manifest="timer.appcache">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Online Timer</title>
+		<link rel="stylesheet" href="">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	</head>
+	<style type="text/css" media="screen">
+		.text-large {
+			font-size: 150%;
+		}
+	</style>
+	<body>
+		
+	<div class="container">
+		<h1 class="text-center online">Online Timer</h1>
+		<div class="row">
+			<div class="col-xs-4 col-md-5"></div>
+			<div class="col-xs-2 col-md-1 borderClr text-center" >
+			    <span id="minutes" class="text-large"></span>m
+			</div>
+			<div class="col-xs-2 col-md-1 borderClr text-center">
+			    <span id="seconds" class="text-large"></span>s
+			</div>
+			<div class="col-xs-4 col-md-5"></div>
+		</div>
+		<div class="row" style="height: 1em;">
+			
+		</div>
+		<div class="row">
+			<div class="col-xs-3 col-md-5"></div>
+			<div class="col-xs-3 col-md-1">
+				<input type="button" id="startstop" class="btn btn-primary center-block" value="Start">	
+			</div>
+			<div class="col-xs-2 col-md-1">
+				<input type="button" id="reset" class="btn btn-danger center-block" value="Reset">
+			</div>
+			<div class="col-xs-4 col-md-5"></div>
+		</div>
+	</div>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	</body>
+
+
+	<script type="text/javascript">
+		
+		var interval;
+		var startStopBtn = $('#startstop');
+		var iTimer;
+		createNewTimer();
+		function createNewTimer(){
+			iTimer = new Timer();
+			setTimeOnUI(iTimer);
+		}
+
+		$('#startstop').on('click', function() {
+			if(startStopBtn.val() == 'Start'){
+				startStopBtn.val('Stop');
+				interval = setInterval(function(){ iTimer.count(); }, 1000);
+			}
+			else if(startStopBtn.val() == 'Stop'){
+				startStopBtn.val('Start');
+				clearInterval(interval);
+				var timerBkp = new Timer();
+				timerBkp.dmin = iTimer.dmin;
+				timerBkp.dsec = iTimer.dsec;
+				clearInterval(interval);
+				setTimeOnUI(timerBkp);
+				iTimer.dmin = timerBkp.dmin;
+				iTimer.dsec = timerBkp.dsec;
+			}
+			window.navigator.vibrate(50);
+		});
+
+
+		$('#reset').on('click', function() {
+			startStopBtn.val('Start');
+			$('#minutes,#seconds').css('color','black');
+			createNewTimer();
+			clearInterval(interval);
+		})
+
+		function setTimeOnUI(timer){
+			$('#minutes').text(timer.dmin);
+			$('#seconds').text(timer.dsec);
+		}
+
+		function Timer(){
+			this.dmin = 1;
+			this.dsec = 0;
+
+			this.count = function(){
+				if(this.dsec == 0){
+					this.dmin--;
+					this.dsec = 60;
+				}
+				this.dsec--;
+				$('#minutes').text(this.dmin);
+				$('#seconds').text(this.dsec);
+
+				if(this.dmin == 0 && this.dsec == 30){
+					$('#minutes,#seconds').css('color','red');
+				}
+				if(this.dmin == 0 && this.dsec == 0){
+					clearInterval(interval);
+				}
+			};
+		}
+	</script>
+</html>
